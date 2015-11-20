@@ -18,17 +18,17 @@
 # echo $now >> $RC_LOCAL_LOG
 # echo "rc.local finished" $CMD >> $RC_LOCAL_LOG
 
-DIR=/home/osmc/smsutil
-SCRIPT=smsutil.py
+DIR=/home/osmc/audiostream/init_script
+SCRIPT=audiostream_check.sh
 DAEMON=$DIR/$SCRIPT
-DAEMON_NAME=smsutil
+DAEMON_NAME=audiostream_check
 LOGFILE=/var/log/$DAEMON_NAME.log
 
 echo `date`: $0: running >> $LOGFILE
+:
 
 start(){
-	python3 $DAEMON $LOGFILE >> $LOGFILE 2>&1 &
-	# sleep 1
+	nohup sudo -u osmc $DAEMON  >> $LOGFILE 2>&1 &
 	PID=$(ps aux | grep -v grep|grep $SCRIPT |awk '{print $2}') # get PID
 	echo "script started with pid:" $PID
 	echo `date`: "Starting system $DAEMON_NAME daemon with PID: $PID" >> $LOGFILE
