@@ -25,7 +25,7 @@ DAEMON_NAME=audiostream_check
 LOGFILE=/var/log/$DAEMON_NAME.log
 
 echo `date`: $0: running >> $LOGFILE
-:
+
 
 start(){
 	nohup sudo -u osmc $DAEMON  >> $LOGFILE 2>&1 &
