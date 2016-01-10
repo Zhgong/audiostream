@@ -4,6 +4,9 @@ CMD="/usr/bin/pulseaudio --start --log-target=syslog"
 SCRIPT="pulseaudio"
 NAME="pulseaudio"
 
+STATE="INIT"
+OLD_STATE="INIT"
+iRESTART=0  # counter for how many times it restarts
 #--------------------------------------------------------------------
 function tst {
     echo "===> Executing: $*"
@@ -22,29 +25,55 @@ function run_pulseaudio {
 
             if ! [ -z $PID ]
             then
-                echo "$NAME is running with PID: $PID."
-                break
+                MSG="$NAME is running with PID: $PID."
+                STATE="ACTIVE"
             else
-                echo $PID "$NAME is not running... "
+                ((iRESTART+=1))
+
+                MSG="$NAME is not running. Restart $iRESTART times."
+                STATE="INACTIVE"
             fi
 
-            tst $CMD
+
+            # check if state changed
+
+            if [[ $OLD_STATE != $STATE ]]
+            then
+                echo $(date): $MSG
+            else
+                if [[ $STATE == "ACTIVE" ]]
+                then
+                    break
+                fi
+            fi
+
+            if [[ $STATE == "INACTIVE" ]]
+            then
+                tst $CMD
+            fi
+
+            OLD_STATE=$STATE
+
             sleep 3
             done
 }
 
-run_pulseaudio
+
+echo ----------------------------------
+tst run_pulseaudio
 
 # set output to analog
-echo "Setting outpt to analog jack"
+echo "===> Setting outpt to analog jack"
 tst sudo amixer cset numid=3 1
 
 itry=1 
 # check again
 while [ $itry -lt 10 ]
 do
-    echo "$(date): check $itry times:"
+    # echo "$(date): check $itry times:"
     run_pulseaudio
     ((itry+=1))
     sleep 10
     done
+
+echo "$(date): exit script"
