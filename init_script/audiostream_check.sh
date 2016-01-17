@@ -7,6 +7,8 @@ NAME="pulseaudio"
 STATE="INIT"
 OLD_STATE="INIT"
 iRESTART=0  # counter for how many times it restarts
+AUTO_CONNECT="python3 /home/osmc/audiostream/autoconnect.py"
+
 #--------------------------------------------------------------------
 function tst {
     echo "===> Executing: $*"
@@ -50,6 +52,8 @@ function run_pulseaudio {
             if [[ $STATE == "INACTIVE" ]]
             then
                 tst $CMD
+                sleep 2
+                tst $AUTO_CONNECT
             fi
 
             OLD_STATE=$STATE
