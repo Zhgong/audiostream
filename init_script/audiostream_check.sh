@@ -53,7 +53,6 @@ function run_pulseaudio {
             then
                 tst $CMD
                 sleep 2
-                tst $AUTO_CONNECT
             fi
 
             OLD_STATE=$STATE
@@ -80,4 +79,5 @@ do
     sleep 10
     done
 
+# tst $AUTO_CONNECT
 echo "$(date): exit script"
